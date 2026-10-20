@@ -1,0 +1,89 @@
+.card {
+  min-width: 0;
+}
+
+.imageLink {
+  display: block;
+  overflow: hidden;
+  background: #f5f3ee;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 4.7;
+  object-fit: cover;
+  transition: transform .45s;
+}
+
+.imageLink:hover .image {
+  transform: scale(1.035);
+}
+
+.info {
+  padding: 14px 2px 0;
+}
+
+.name {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  text-decoration: none;
+}
+
+.price {
+  margin: 4px 0 13px;
+  color: #777872;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  gap: 9px;
+}
+
+.addButton {
+  flex: 1;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #20211e;
+  background: #20211e;
+  color: white;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.addButton:hover {
+  background: #ae6551;
+}
+
+.wishButton {
+  width: 40px;
+  border: 1px solid #e6e5e0;
+  background: white;
+  font-size: 23px;
+  line-height: 1;
+}
+
+.wishButton:hover {
+  border-color: #ae6551;
+  color: #ae6551;
+}
+
+.status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .name { font-size: 17px; }
+  .addButton { padding: 7px; font-size: 9px; }
+}
+
+@media (max-width: 420px) {
+  .image { aspect-ratio: 4 / 4.1; }
+}
