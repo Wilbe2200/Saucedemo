@@ -1,6 +1,6 @@
 import { Product as ProductRow } from "@prisma/client";
 import { Product } from "@/domain/Product";
-import { db } from "@/lib/db";
+import { prisma as db } from "@/lib/db";
 import { IProductRepository } from "./IProductRepository";
 
 /** Implementa el repositorio de productos sobre PostgreSQL mediante Prisma. */

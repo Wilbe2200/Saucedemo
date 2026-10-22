@@ -5,4 +5,5 @@ export interface IWishListRepository {
   findBySessionId(sessionId: string): Promise<WishList>;
   add(sessionId: string, productId: string): Promise<WishList>;
   remove(sessionId: string, productId: string): Promise<WishList>;
+  merge(sourceSessionId: string, targetSessionId: string): Promise<void>;
 }

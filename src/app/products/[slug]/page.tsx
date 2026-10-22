@@ -15,7 +15,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <img src={product.imageUrl} alt={product.name} />
         <div><p className="eyebrow">SAUCE DEMO / COLLECTION</p><h1>{product.name}</h1>
           <p className="detail-price">{formatPrice(product.priceGbp)}</p><p>{product.description}</p>
-          <ProductActions productId={product.id} productName={product.name} />
+          <ProductActions product={{
+            id: product.id,
+            name: product.name,
+            slug: product.slug,
+            priceGbp: product.priceGbp,
+            imageUrl: product.imageUrl,
+            description: product.description,
+          }} />
         </div>
       </section>
     );

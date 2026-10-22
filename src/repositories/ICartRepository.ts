@@ -6,4 +6,6 @@ export interface ICartRepository {
   addItem(cartId: string, productId: string, quantity: number): Promise<Cart>;
   setQuantity(cartId: string, productId: string, quantity: number): Promise<Cart>;
   removeItem(cartId: string, productId: string): Promise<Cart>;
+  clearItems(cartId: string): Promise<Cart>;
+  merge(sourceCartId: string, targetCartId: string): Promise<void>;
 }

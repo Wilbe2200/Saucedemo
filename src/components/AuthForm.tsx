@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { dispatchStoreEvent } from "@/lib/store-client";
 
 /** Envía credenciales de registro o acceso y comunica errores al usuario. */
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
@@ -12,17 +13,25 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     setError("");
     setSuccess("");
     const form = new FormData(event.currentTarget);
-    const response = await fetch(`/api/auth/${mode}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
-    });
-    const result: { error?: string } = await response.json();
-    if (!response.ok) {
-      setError(result.error ?? "Unable to complete the request.");
-      return;
+    try {
+      const response = await fetch(`/api/auth/${mode}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
+      });
+      const result: { error?: string } = await response.json();
+      if (!response.ok) {
+        setError(result.error ?? "Unable to complete the request.");
+        return;
+      }
+      setSuccess(mode === "register" ? "Your account has been created. You can now log in." : "You are now logged in.");
+      if (mode === "login") {
+        dispatchStoreEvent("sauce-cart-updated");
+        dispatchStoreEvent("sauce-wishlist-updated");
+      }
+    } catch (cause: unknown) {
+      setError(cause instanceof Error ? cause.message : "Unable to complete the request.");
     }
-    setSuccess(mode === "register" ? "Your account has been created. You can now log in." : "You are now logged in.");
   }
 
   return (

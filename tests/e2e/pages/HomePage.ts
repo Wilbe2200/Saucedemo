@@ -7,7 +7,7 @@ export class HomePage extends BasePage {
 
   async expectFeaturedProducts(): Promise<void> {
     await expect(this.page.getByRole("heading", { name: "Featured products" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Grey jacket" })).toBeVisible();
+    await expect(this.page.getByRole("link", { name: "Sauce Labs Backpack", exact: true })).toBeVisible();
   }
 
   async addFirstProductToCart(): Promise<void> {

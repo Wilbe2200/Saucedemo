@@ -45,6 +45,16 @@ export class CartService {
     return this.carts.removeItem(cartId, productId);
   }
 
+  async clear(cartId: string): Promise<Cart> {
+    const validId = z.string().min(1).max(100).safeParse(cartId);
+    if (!validId.success) throw new ValidationError("A valid cart ID is required.");
+    return this.carts.clearItems(cartId);
+  }
+
+  async merge(sourceCartId: string, targetCartId: string): Promise<void> {
+    await this.carts.merge(sourceCartId, targetCartId);
+  }
+
   private parseItem(input: unknown): z.infer<typeof itemSchema> {
     const parsed = itemSchema.safeParse(input);
     if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid cart item.");

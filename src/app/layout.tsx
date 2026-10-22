@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { StoreFooter } from "@/components/StoreFooter";
 import { StoreHeader } from "@/components/StoreHeader";
+import { WishListProvider } from "@/components/WishListProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,9 +13,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
-        <StoreHeader />
-        <main className="page-content">{children}</main>
-        <StoreFooter />
+        <WishListProvider>
+          <StoreHeader />
+          <main className="page-content">{children}</main>
+          <StoreFooter />
+        </WishListProvider>
       </body>
     </html>
   );

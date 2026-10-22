@@ -1,6 +1,6 @@
 import { User as UserRow } from "@prisma/client";
 import { User } from "@/domain/User";
-import { db } from "@/lib/db";
+import { prisma as db } from "@/lib/db";
 import { IUserRepository } from "./IUserRepository";
 
 /** Implementa el almacenamiento de usuarios en la tabla PostgreSQL users. */

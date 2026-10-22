@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { browserSessionId, dispatchStoreEvent, formatPrice } from "@/lib/store-client";
+import { dispatchStoreEvent, ensureStoreSession, formatPrice, STORE_EVENT_KEY } from "@/lib/store-client";
 
 interface CartData {
   id: string;
@@ -16,33 +16,53 @@ export function StoreHeader() {
   const [cart, setCart] = useState<CartData | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cartError, setCartError] = useState("");
 
   const loadCart = useCallback(async () => {
-    const id = browserSessionId("cart");
-    const response = await fetch(`/api/cart?cartId=${encodeURIComponent(id)}`);
-    if (response.ok) setCart((await response.json()) as CartData);
+    try {
+      await ensureStoreSession();
+      const response = await fetch("/api/cart", { cache: "no-store" });
+      if (!response.ok) throw new Error("Could not load your cart. Please try again.");
+      setCart((await response.json()) as CartData);
+      setCartError("");
+    } catch (cause: unknown) {
+      setCartError(cause instanceof Error ? cause.message : "Could not load your cart.");
+    }
   }, []);
 
   useEffect(() => {
     void loadCart();
     const refresh = (): void => { void loadCart(); };
+    const refreshFromOtherTab = (event: StorageEvent): void => {
+      if (event.key === STORE_EVENT_KEY) refresh();
+    };
     window.addEventListener("sauce-cart-updated", refresh);
-    return () => window.removeEventListener("sauce-cart-updated", refresh);
+    window.addEventListener("storage", refreshFromOtherTab);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.removeEventListener("sauce-cart-updated", refresh);
+      window.removeEventListener("storage", refreshFromOtherTab);
+      document.removeEventListener("visibilitychange", refresh);
+    };
   }, [loadCart]);
 
   async function setQuantity(productId: string, quantity: number): Promise<void> {
     if (!cart) return;
-    const url = `/api/cart/items/${encodeURIComponent(productId)}?cartId=${encodeURIComponent(cart.id)}`;
-    const response = quantity < 1
-      ? await fetch(url, { method: "DELETE" })
-      : await fetch(`/api/cart/items/${encodeURIComponent(productId)}`, {
+    try {
+      await ensureStoreSession();
+      const url = `/api/cart/items/${encodeURIComponent(productId)}`;
+      const response = quantity < 1
+        ? await fetch(url, { method: "DELETE" })
+        : await fetch(`/api/cart/items/${encodeURIComponent(productId)}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cartId: cart.id, quantity }),
+          body: JSON.stringify({ quantity }),
         });
-    if (response.ok) {
+      if (!response.ok) throw new Error("Could not update your cart. Please try again.");
       await loadCart();
       dispatchStoreEvent("sauce-cart-updated");
+    } catch (cause: unknown) {
+      setCartError(cause instanceof Error ? cause.message : "Could not update your cart.");
     }
   }
 
@@ -78,6 +98,7 @@ export function StoreHeader() {
         <div className="drawer-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setCartOpen(false); }}>
           <aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
             <div className="drawer-heading"><h2 id="cart-title">Your cart</h2><button aria-label="Close cart" onClick={() => setCartOpen(false)}>×</button></div>
+            {cartError && <p role="alert">{cartError}</p>}
             {!cart?.items.length ? <p>Your cart is empty.</p> : (
               <>
                 <ul className="drawer-items">{cart.items.map(({ product, quantity }) => (

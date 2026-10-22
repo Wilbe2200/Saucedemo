@@ -30,6 +30,10 @@ export class WishListService {
     return this.lists.remove(data.sessionId, data.productId);
   }
 
+  async merge(sourceSessionId: string, targetSessionId: string): Promise<void> {
+    await this.lists.merge(sourceSessionId, targetSessionId);
+  }
+
   private parse(input: unknown): z.infer<typeof wishlistInput> {
     const parsed = wishlistInput.safeParse(input);
     if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid wish list item.");

@@ -1,3 +1,23 @@
+import Link from "next/link";
+import { blogPosts } from "@/lib/blog-posts";
+
 export default function BlogPage() {
-  return <article className="text-page"><p className="eyebrow">THE SAUCE JOURNAL</p><h1>Blog</h1><p>Our journal is coming soon. Check back for style notes and stories from the Sauce community.</p></article>;
+  return (
+    <section className="section-block blog-index">
+      <p className="eyebrow">THE SAUCE JOURNAL</p>
+      <h1>Stories and style notes</h1>
+      <div className="blog-grid">
+        {blogPosts.map((post) => (
+          <article className="blog-card" key={post.slug}>
+            <p className="eyebrow">{new Date(`${post.publishedAt}T00:00:00`).toLocaleDateString("en-GB", {
+              day: "numeric", month: "long", year: "numeric",
+            })}</p>
+            <h2><Link href={`/blog/${post.slug}`}>{post.title}</Link></h2>
+            <p>{post.summary}</p>
+            <Link className="text-link" href={`/blog/${post.slug}`}>Read article →</Link>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
 }
