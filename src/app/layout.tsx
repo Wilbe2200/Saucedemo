@@ -1,23 +1,17 @@
 import type { Metadata } from "next";
-import { StoreFooter } from "@/components/StoreFooter";
-import { StoreHeader } from "@/components/StoreHeader";
-import { WishListProvider } from "@/components/WishListProvider";
+import { SiteFrame } from "@/components/SiteFrame";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sauce Demo",
-  description: "Just a demo site showing off what Sauce can do.",
+  title: "Para Megan, con todo mi amor",
+  description: "Un rinconcito romántico lleno de cartas, flores y capibaras para Megan.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body>
-        <WishListProvider>
-          <StoreHeader />
-          <main className="page-content">{children}</main>
-          <StoreFooter />
-        </WishListProvider>
+        <SiteFrame>{children}</SiteFrame>
       </body>
     </html>
   );

@@ -61,3 +61,25 @@ model WishlistItem {
   @@unique([sessionId, productId])
   @@map("wishlist_items")
 }
+
+model LoveLetter {
+  id            String   @id @default(cuid())
+  requestId     String   @unique @map("request_id")
+  title         String
+  preview       String
+  message       String   @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("love_letters")
+}
+
+model LoveNote {
+  id        String   @id @default(cuid())
+  requestId String   @unique @map("request_id")
+  message   String   @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("love_notes")
+}

@@ -1,45 +1,45 @@
 import { test, expect } from "@playwright/test";
-import { HomePage } from "../pages/HomePage";
+import { CatalogPage } from "../pages/CatalogPage";
 import { CartPage } from "../pages/CartPage";
 import { WishListPage } from "../pages/WishListPage";
 
-test("home shows seeded products", async ({ page }) => {
-  const home = new HomePage(page);
-  await home.goto("/");
-  await home.expectFeaturedProducts();
+test("catalog shows seeded products", async ({ page }) => {
+  const catalog = new CatalogPage(page);
+  await catalog.goto("/catalog");
+  await catalog.expectProducts();
 });
 
 test("customer can add a product to the cart", async ({ page }) => {
-  const home = new HomePage(page);
+  const catalog = new CatalogPage(page);
   const cart = new CartPage(page);
-  await home.goto("/");
-  await home.addFirstProductToCart();
+  await catalog.goto("/catalog");
+  await catalog.addFirstProductToCart();
   await expect(page.getByText("Added to your cart.", { exact: true })).toBeAttached();
   await cart.expectItemCount(1);
 });
 
 test("an empty cart shows its empty message", async ({ page }) => {
-  const home = new HomePage(page);
+  const catalog = new CatalogPage(page);
   const cart = new CartPage(page);
-  await home.goto("/");
-  await home.openCart();
+  await catalog.goto("/catalog");
+  await catalog.openCart();
   await cart.expectEmpty();
 });
 
 test("customer can add a product to the wish list", async ({ page }) => {
-  const home = new HomePage(page);
+  const catalog = new CatalogPage(page);
   const list = new WishListPage(page);
-  await home.goto("/");
-  await home.addFirstProductToWishList();
+  await catalog.goto("/catalog");
+  await catalog.addFirstProductToWishList();
   await expect(page.getByText("Added to your wish list.", { exact: true })).toBeAttached();
   await page.goto("/wishlist");
   await list.expectProduct("Sauce Labs Backpack");
 });
 
 test("customer can remove a product from the wish list", async ({ page }) => {
-  const home = new HomePage(page);
-  await home.goto("/");
-  await home.addFirstProductToWishList();
+  const catalog = new CatalogPage(page);
+  await catalog.goto("/catalog");
+  await catalog.addFirstProductToWishList();
   await expect(page.getByText("Added to your wish list.", { exact: true })).toBeAttached();
   await page.goto("/wishlist");
   await expect(page.getByRole("link", { name: "Sauce Labs Backpack", exact: true })).toBeVisible();
@@ -48,14 +48,14 @@ test("customer can remove a product from the wish list", async ({ page }) => {
 });
 
 test("buy now adds the product and opens checkout", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/catalog");
   await page.getByRole("button", { name: "Buy now" }).first().click();
   await expect(page).toHaveURL(/\/checkout$/);
   await expect(page.getByText("Qty 1 · £29.99 each")).toBeVisible();
 });
 
 test("customer can complete sandbox checkout and cart is cleared", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/catalog");
   await page.getByRole("button", { name: "Buy now" }).first().click();
   await expect(page).toHaveURL(/\/checkout$/);
   await expect(page.getByLabel("First name")).toBeVisible();

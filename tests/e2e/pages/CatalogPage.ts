@@ -1,12 +1,12 @@
 import { expect, Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 
-/** Define localizadores y acciones comprobables de la página de inicio. */
-export class HomePage extends BasePage {
+/** Define localizadores y acciones comprobables del catálogo. */
+export class CatalogPage extends BasePage {
   constructor(page: Page) { super(page); }
 
-  async expectFeaturedProducts(): Promise<void> {
-    await expect(this.page.getByRole("heading", { name: "Featured products" })).toBeVisible();
+  async expectProducts(): Promise<void> {
+    await expect(this.page.getByRole("heading", { name: "Catalog", exact: true })).toBeVisible();
     await expect(this.page.getByRole("link", { name: "Sauce Labs Backpack", exact: true })).toBeVisible();
   }
 
