@@ -4,7 +4,7 @@ Portada romántica para Megan, desarrollada con Next.js App Router, React, TypeS
 
 La tienda original sigue disponible en `/catalog` y utiliza Prisma con PostgreSQL. Las cartas y notas nuevas de la portada se guardan mediante Prisma y aparecen inmediatamente; la página carga las notas de la base de datos y conserva el formulario si Neon no está disponible. Los envíos usan identificadores idempotentes para evitar duplicados al reintentar. El indicador de Neon refleja el estado de la conexión real. Esta aplicación usa Prisma, no Drizzle.
 
-El botón de música abre el reproductor oficial de YouTube de “MILO J - RARA VEZ”. La reproducción comienza después de la interacción de Megan y puede requerir que ella pulse reproducir debido a las políticas del navegador. La pista se reproduce en bucle mientras el reproductor está abierto; el audio no se descarga ni se aloja en esta aplicación.
+La primera interacción de Megan con la portada inicia el reproductor oficial incrustado de YouTube de “MILO J - RARA VEZ”; el botón de música permite silenciarlo o reanudarlo. La pista está configurada en bucle y continúa al cerrar el panel del reproductor. Los navegadores pueden exigir que se pulse reproducir dentro del reproductor, y el volumen depende de YouTube y del dispositivo. El audio no se descarga ni se aloja en esta aplicación.
 
 ## Requisitos
 

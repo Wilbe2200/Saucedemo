@@ -21,6 +21,7 @@ import {
   Plus,
   Send,
   Sparkles,
+  VolumeX,
   X,
 } from "lucide-react";
 
@@ -386,6 +387,35 @@ export function MeganPage() {
   const musicPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const startMusicOnFirstInteraction = (event: Event) => {
+      document.removeEventListener("pointerdown", startMusicOnFirstInteraction);
+      document.removeEventListener("keydown", startMusicFromKeyboard);
+      if (event.target instanceof Element && event.target.closest(".love-sound-button")) return;
+      setSoundEnabled(true);
+      setMusicOpen(true);
+    };
+    const startMusicFromKeyboard = (event: KeyboardEvent) => {
+      if (
+        event.repeat ||
+        (event.key !== "Enter" && event.key !== " ") ||
+        (event.target instanceof HTMLElement &&
+          (event.target.isContentEditable ||
+            event.target.matches("input, textarea, select")))
+      ) {
+        return;
+      }
+      startMusicOnFirstInteraction(event);
+    };
+
+    document.addEventListener("pointerdown", startMusicOnFirstInteraction, { passive: true });
+    document.addEventListener("keydown", startMusicFromKeyboard);
+    return () => {
+      document.removeEventListener("pointerdown", startMusicOnFirstInteraction);
+      document.removeEventListener("keydown", startMusicFromKeyboard);
+    };
+  }, []);
+
+  useEffect(() => {
     let mounted = true;
     const lettersController = new AbortController();
     const notesController = new AbortController();
@@ -532,13 +562,11 @@ export function MeganPage() {
         !(event.target instanceof Element && event.target.closest(".love-sound-button"))
       ) {
         setMusicOpen(false);
-        setSoundEnabled(false);
       }
     };
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setMusicOpen(false);
-        setSoundEnabled(false);
       }
     };
     document.addEventListener("pointerdown", closeOnOutsideClick);
@@ -731,13 +759,20 @@ export function MeganPage() {
                 setMusicOpen(next);
               }}
               aria-label={soundEnabled ? "Pausar música de Milo J" : "Reproducir música de Milo J"}
-              title={soundEnabled ? "Pausar música de Milo J" : "Reproducir música de Milo J"}
+              aria-pressed={soundEnabled}
+              title={soundEnabled ? "Silencio: pausar música de Milo J" : "Música activada: reproducir Milo J"}
             >
-              {soundEnabled ? <Heart className="love-music-heart" size={17} fill="currentColor" /> : <Music2 size={17} />}
-              <span>{soundEnabled ? "Milo J · sonando" : "Música"}</span>
+              {soundEnabled ? <Heart className="love-music-heart" size={17} fill="currentColor" /> : <VolumeX size={17} />}
+              <span>{soundEnabled ? "Música activada" : "Silencio"}</span>
             </button>
-            {musicOpen && (
-              <div className="love-music-panel" ref={musicPanelRef} role="dialog" aria-label="Reproductor de Milo J">
+            {(musicOpen || soundEnabled) && (
+              <div
+                className={`love-music-panel${musicOpen ? "" : " love-music-panel-background"}`}
+                ref={musicPanelRef}
+                role="dialog"
+                aria-label="Reproductor de Milo J"
+                aria-hidden={!musicOpen}
+              >
                 <div className="love-music-panel-heading">
                   <span className="love-music-art"><Music2 size={18} /></span>
                   <span><strong>MILO J · RARA VEZ</strong><small>Reproductor oficial de YouTube · en bucle</small></span>
@@ -754,13 +789,13 @@ export function MeganPage() {
                   </button>
                 </div>
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${MILO_J_VIDEO_ID}?autoplay=1&loop=1&playlist=${MILO_J_VIDEO_ID}&controls=1&rel=0`}
+                  src={`https://www.youtube-nocookie.com/embed/${MILO_J_VIDEO_ID}?autoplay=1&loop=1&playlist=${MILO_J_VIDEO_ID}&controls=1&rel=0&playsinline=1`}
                   title="Milo J - Rara Vez (reproductor oficial de YouTube)"
                   allow="autoplay; encrypted-media; picture-in-picture"
                   referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
                 />
-                <p>Si la música no inicia automáticamente, toca reproducir en el video.</p>
+                <p>Si no inicia, toca reproducir y ajusta el volumen aquí o en tu dispositivo.</p>
               </div>
             )}
             <button className="love-add-button" type="button" onClick={scrollToComposer}>

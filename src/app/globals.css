@@ -249,6 +249,8 @@ button { cursor: pointer; }
 .love-icon-button:hover { background: var(--love-pink); }
 .love-music-heart { color: #b83c55; animation: love-heart-beat .85s ease-in-out infinite; }
 .love-music-panel { position: absolute; z-index: 20; top: calc(100% + 12px); right: 0; width: min(360px, calc(100vw - 34px)); padding: 14px; border: 1px solid #efdfd6; border-radius: 9px; background: #fffdfa; box-shadow: 0 16px 42px rgba(72, 46, 50, .18); }
+.love-music-panel-background { position: fixed; top: auto; right: auto; bottom: 0; left: -10000px; width: 1px; height: 1px; overflow: hidden; padding: 0; border: 0; opacity: 0; pointer-events: none; }
+.love-music-panel-background iframe { width: 1px; height: 1px; aspect-ratio: auto; }
 .love-music-panel-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
 .love-music-panel-heading > span:nth-child(2) { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; }
 .love-music-panel-heading strong { color: var(--love-wine); font-size: 10px; letter-spacing: .06em; }
@@ -466,7 +468,7 @@ button { cursor: pointer; }
   .love-db-status-text { display: none; }
   .love-add-button { min-height: 34px; padding: 0 11px; font-size: 9px; }
   .love-sound-button { gap: 4px; padding: 8px 6px; font-size: 9px; }
-  .love-sound-button span { display: none; }
+  .love-sound-button span { display: inline; }
   .love-music-panel { position: fixed; top: 76px; right: 17px; }
   .love-hero { min-height: auto; grid-template-columns: 1fr; gap: 2px; padding: 52px 7px 32px; }
   .love-hero-copy { padding: 0; }

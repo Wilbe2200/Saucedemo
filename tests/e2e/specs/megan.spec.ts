@@ -66,12 +66,22 @@ test("Megan's page opens letters, plays Milo J, calculates capybaras, and saves 
   const cupidCapybara = page.getByRole("button", { name: /Capibara cupido/i });
   await cupidCapybara.click();
   await expect(cupidCapybara.locator(".love-capybara-burst")).toBeVisible();
+  const musicPlayer = page.getByTitle("Milo J - Rara Vez (reproductor oficial de YouTube)");
+  await expect(musicPlayer).toBeVisible();
+  await expect(musicPlayer).toHaveAttribute("src", /loop=1.*playlist=aBSkvI0CkgU.*playsinline=1/);
+  await expect(page.getByRole("button", { name: "Pausar música de Milo J" })).toContainText("Música activada");
+  await page.locator(".love-letters-section").click({ position: { x: 20, y: 20 } });
+  await expect(musicPlayer).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Pausar música de Milo J" })).toContainText("Música activada");
+  await page.getByRole("button", { name: "Pausar música de Milo J" }).click();
+  await expect(musicPlayer).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Reproducir música de Milo J" })).toContainText("Silencio");
+
   const databaseButton = page.getByRole("button", { name: /Neon PostgreSQL: conectada/ });
   await expect(databaseButton).toBeVisible();
   await page.getByRole("button", { name: "Reproducir música de Milo J" }).click();
-  const musicPlayer = page.getByTitle("Milo J - Rara Vez (reproductor oficial de YouTube)");
   await expect(musicPlayer).toBeVisible();
-  await expect(musicPlayer).toHaveAttribute("src", /loop=1.*playlist=aBSkvI0CkgU/);
+  await expect(musicPlayer).toHaveAttribute("src", /loop=1.*playlist=aBSkvI0CkgU.*playsinline=1/);
   await page.getByRole("button", { name: "Pausar música de Milo J" }).click();
   await expect(musicPlayer).toHaveCount(0);
 
@@ -106,7 +116,7 @@ test("Megan's page opens letters, plays Milo J, calculates capybaras, and saves 
   await page.reload();
   await expect(page.getByRole("button", { name: /Un abrazo para hoy/ })).toBeVisible();
   await page.getByRole("button", { name: /Un abrazo para hoy/ }).click();
-  await expect(page.getByRole("dialog")).toContainText("Eres mi alegría, Megan");
+  await expect(page.getByRole("dialog", { name: "Un abrazo para hoy" })).toContainText("Eres mi alegría, Megan");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
@@ -125,6 +135,30 @@ test("Megan's page fits a mobile viewport without horizontal scrolling", async (
   const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
   expect(documentWidth).toBeLessThanOrEqual(390);
   await expect(page.getByRole("button", { name: /abrir sobre/i }).first()).toBeVisible();
+});
+
+test("music starts on the first mobile interaction and the header keeps it under control", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/api/love-letters", (route) => route.fulfill({ json: { letters: [] } }));
+  await page.route("**/api/love-notes", (route) => route.fulfill({ json: { notes: [] } }));
+  await page.goto("/");
+
+  const musicButton = page.getByRole("button", { name: "Reproducir música de Milo J" });
+  await expect(musicButton).toContainText("Silencio");
+  await musicButton.click();
+
+  const musicPlayer = page.getByTitle("Milo J - Rara Vez (reproductor oficial de YouTube)");
+  await expect(musicPlayer).toBeVisible();
+  await expect(musicPlayer).toHaveAttribute("src", /autoplay=1&loop=1&playlist=aBSkvI0CkgU.*playsinline=1/);
+  await expect(page.getByRole("button", { name: "Pausar música de Milo J" })).toContainText("Música activada");
+  await expect(page.getByRole("button", { name: "Pausar música de Milo J" })).toHaveAttribute("aria-pressed", "true");
+
+  await page.locator(".love-letters-section").click({ position: { x: 20, y: 20 } });
+  await expect(musicPlayer).toHaveCount(1);
+  await page.getByRole("button", { name: "Pausar música de Milo J" }).click();
+  await expect(musicPlayer).toHaveCount(0);
+  await expect(musicButton).toContainText("Silencio");
+  await expect(musicButton).toHaveAttribute("aria-pressed", "false");
 });
 
 test("Neon status reflects the configured PostgreSQL connection", async ({ page }) => {
